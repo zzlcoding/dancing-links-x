@@ -24,8 +24,8 @@ public:
 	virtual ~DLX();
 
 	void init(int col);
-	void appendRow(const std::list<int> &data);
-	void appendRow(bool *data);
+	int appendRow(const std::list<int> &data);
+	int appendRow(bool *data);
 	std::vector<int> dance();
 
 private:
