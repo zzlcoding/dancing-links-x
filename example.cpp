@@ -1,5 +1,9 @@
 #include "DLX.h"
 #include <map>
+#include <windows.h>
+#include <iostream>
+#include <algorithm>
+#include <set>
 
 using namespace dlx;
 
@@ -16,8 +20,8 @@ void getRowData(const AnsNode &node, std::list<int> &rowData)
 	int d2 = 80 + node.row * 9 + node.num;
 	int d3 = 161 + node.col * 9 + node.num;
 
-	int x = node.col % 3;
-	int y = node.row % 3;
+	int x = node.col / 3;
+	int y = node.row / 3;
 	int idx = y * 3 + x;
 	int d4 = 242 + idx * 9 + node.num;
 	
@@ -30,16 +34,16 @@ void getRowData(const AnsNode &node, std::list<int> &rowData)
 
 int main(int argc, char *argv[])
 {
-	//bool data[][7] = {
-	//	{0, 0, 1, 0, 1, 1, 0},
-	//	{1, 0, 0, 1, 0, 0, 1},
-	//	{0, 1, 1, 0, 0, 1, 0},
-	//	{1, 0, 0, 1, 0, 0, 0},
-	//	{0, 1, 0, 0, 0, 0, 1},
-	//	{0, 0, 0, 1, 1, 0, 1}
+	//bool data[][14] = {
+	//	{0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0},
+	//	{1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1},
+	//	{0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0},
+	//	{1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+	//	{0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
+	//	{0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1}
 	//};
 
-	//DLX d(7);
+	//DLX d(14);
 	//d.appendRow(data[0]);
 	//d.appendRow(data[1]);
 	//d.appendRow(data[2]);
@@ -49,21 +53,8 @@ int main(int argc, char *argv[])
 
 	//std::vector<int> ret = d.dance();
 
-//	int shudu[9][9] = {
-//		{0,3,0, 5,4,2, 0,1,0},
-//		{0,2,8, 0,0,0, 5,6,0},
-//		{0,0,0, 0,6,9, 0,0,0},
-////----------------------------------
-//		{0,5,0, 0,0,3, 0,0,1},
-//		{8,9,3, 6,0,1, 0,2,7},
-//		{1,0,0, 7,2,8, 0,0,0},
-////----------------------------------
-//		{0,0,1, 0,7,4, 0,9,0},
-//		{0,4,9, 2,8,0, 0,0,0},
-//		{6,7,0, 0,0,5, 0,3,4}
-//	};
-
-	int shudu[9][9] = {
+	// sudoku example
+	int sudoku[9][9] = {
 		{0,6,0, 5,9,3, 0,0,0},
 		{9,0,1, 0,0,0, 5,0,0},
 		{0,3,0, 4,0,0, 0,9,0},
@@ -77,6 +68,23 @@ int main(int argc, char *argv[])
 		{0,0,0, 7,8,5, 0,1,0}
 	};
 
+	std::cout << "source:" << std::endl;
+	for(int row = 0; row < 9; row ++)
+	{
+		std::cout << "	";
+		for(int col = 0; col < 9; col ++)
+		{
+			int num = sudoku[row][col];
+			std::cout << num << " ";
+			if(col % 3 == 2)
+				std::cout << " ";
+		}
+		std::cout << std::endl;
+		if(row % 3 == 2)
+			std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
 	dlx::DLX dlx(81 * 4);
 	std::map<int, AnsNode> ansMap;
 
@@ -85,7 +93,7 @@ int main(int argc, char *argv[])
 		for(int col = 0; col < 9; col ++)
 		{
 			std::list<int> rowData;
-			int num = shudu[row][col];
+			int num = sudoku[row][col];
 			if(num == 0)
 			{
 				for(int i = 1; i < 10; i ++)
@@ -107,6 +115,36 @@ int main(int argc, char *argv[])
 	}
 
 	std::vector<int> r = dlx.dance();
+
+	if(r.empty())
+	{
+		std::cout << "No solution" << std::endl;
+	}
+	else
+	{
+		for(std::vector<int>::iterator it = r.begin(); it != r.end(); ++ it)
+		{
+			AnsNode &an = ansMap[*it];
+			sudoku[an.row][an.col] = an.num;
+		}
+
+		std::cout << "answer:" << std::endl;
+		for(int row = 0; row < 9; row ++)
+		{
+			std::cout << "	";
+			for(int col = 0; col < 9; col ++)
+			{
+				int num = sudoku[row][col];
+				std::cout << num << " ";
+				if(col % 3 == 2)
+					std::cout << " ";
+			}
+			std::cout << std::endl;
+			if(row % 3 == 2)
+				std::cout << std::endl;
+		}
+		std::cout << std::endl;
+	}
 
 	return 0;
 }

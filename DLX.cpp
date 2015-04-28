@@ -1,6 +1,5 @@
 #include "DLX.h"
 #include <set>
-#include <iostream>
 
 using namespace dlx;
 
@@ -26,29 +25,26 @@ DLX::~DLX()
 void DLX::init( int col )
 {
 	clearData();
-	_head = new Node;
+	_head = new ColNode;
+	_head->left = _head;
+	_head->right = _head;
+	_head->rowCount = 0;
 
 	for(int i = 0; i < col; i ++)
 	{
-		Node *node = new Node;
-		if(_cols.empty())
-		{
-			_head->right = node;
-			_head->left = node;
-			node->left = _head;
-			node->right = _head;
-		}
-		else
-		{
-			node->left = _head->left;
-			node->right = _head;
-			_head->left->right = node;
-			_head->left = node;
-		}
+		ColNode *node = new ColNode;
+
+		node->left = _head->left;
+		node->right = _head;
+		_head->left->right = node;
+		_head->left = node;
+
 		node->up = node;
 		node->down = node;
 		node->col = node;
 		node->row = 0;
+		node->rowCount = 0;
+
 		_cols.push_back(node);
 	}
 }
@@ -83,7 +79,7 @@ int DLX::appendRow( bool *data )
 	{
 		if(data[i])
 		{
-			Node *colNode = _cols[i];
+			ColNode *colNode = _cols[i];
 			Node *node = new Node;
 
 			node->up = colNode->up;
@@ -92,6 +88,7 @@ int DLX::appendRow( bool *data )
 			colNode->up = node;
 			node->col = colNode;
 			node->row = _row;
+			colNode->rowCount ++;
 
 			if(leftNode != NULL)
 			{
@@ -109,8 +106,6 @@ int DLX::appendRow( bool *data )
 		}
 	}
 
-	std::cout <<std::endl;
-
 	return _row;
 }
 
@@ -124,11 +119,19 @@ std::vector<int> dlx::DLX::dance()
 
 bool dlx::DLX::danceInternal( int lev, std::vector<int> &ans )
 {
-	Node *c1 = _head->right;
-	if(c1 == _head)
+	if(_head->right == _head)
 	{
 		ans.resize(lev);
 		return true;
+	}
+
+	ColNode *c1 = (ColNode *)_head->right;
+	ColNode *tmpNode = c1;
+	while(tmpNode != _head)
+	{
+		if(tmpNode->rowCount < c1->rowCount && tmpNode->rowCount > 0)
+			c1 = tmpNode;
+		tmpNode = (ColNode*)tmpNode->right;
 	}
 
 	removeCol(c1);
@@ -179,6 +182,7 @@ void DLX::removeCol( Node *colNode )
 		{
 			rightNode->down->up = rightNode->up;
 			rightNode->up->down = rightNode->down;
+			rightNode->col->rowCount --;
 			rightNode = rightNode->right;
 		}
 		downNode = downNode->down;
@@ -201,6 +205,7 @@ void DLX::resumeCol( Node *colNode )
 		{
 			rightNode->down->up = rightNode;
 			rightNode->up->down = rightNode;
+			rightNode->col->rowCount ++;
 			rightNode = rightNode->right;
 		}
 		upNode = upNode->up;
@@ -215,12 +220,12 @@ void DLX::clearData()
 		_head = NULL;
 	}
 
-	for(std::vector<Node*>::iterator it = _cols.begin(); it != _cols.end(); ++ it)
+	for(std::vector<ColNode*>::iterator it = _cols.begin(); it != _cols.end(); ++ it)
 	{
-		Node *rowNode = *it;
-		Node *node = rowNode->down;
-		delete rowNode;
-		while(node != rowNode)
+		Node *colNode = *it;
+		Node *node = colNode->down;
+		delete colNode;
+		while(node != colNode)
 		{
 			Node *tmp = node->down;
 			delete node;

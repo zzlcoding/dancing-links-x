@@ -6,14 +6,24 @@
 
 namespace dlx {
 
-struct Node
+class ColNode;
+
+class Node
 {
+public:
 	Node *left;
 	Node *right;
 	Node *up;
 	Node *down;
-	Node *col;
+	ColNode *col;
 	int row;
+};
+
+class ColNode
+	: public Node
+{
+public:
+	int rowCount;
 };
 
 class DLX
@@ -35,8 +45,8 @@ private:
 	void clearData();
 
 private:
-	std::vector<Node*> _cols;
-	Node *_head;
+	std::vector<ColNode*> _cols;
+	ColNode *_head;
 	int _row;
 };
 
