@@ -130,7 +130,7 @@ bool DLX::danceInternal( int lev, std::vector<std::vector<int> > &anss, std::vec
 	ColNode *tmpNode = c1;
 	while(tmpNode != _head)
 	{
-		if(tmpNode->rowCount < c1->rowCount && tmpNode->rowCount > 0)
+		if(tmpNode->rowCount < c1->rowCount)
 			c1 = tmpNode;
 		tmpNode = (ColNode*)tmpNode->right;
 	}
