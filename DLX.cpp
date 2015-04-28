@@ -10,7 +10,7 @@ DLX::DLX()
 
 }
 
-DLX::DLX( int col )
+DLX::DLX( int col)
 	: _head(NULL)
 	, _row(0)
 {
@@ -109,19 +109,20 @@ int DLX::appendRow( bool *data )
 	return _row;
 }
 
-std::vector<int> dlx::DLX::dance()
+std::vector<std::vector<int> >  DLX::dance( bool multiAnswer /*= false*/, bool recover /*= true*/ )
 {
-	std::vector<int> ret;
-	if(danceInternal(0, ret))
-		return ret;
-	return std::vector<int>();
+	std::vector<std::vector<int> > ret;
+	std::vector<int> ans;
+	danceInternal(0, ret, ans, multiAnswer, recover);
+	return ret;
 }
 
-bool dlx::DLX::danceInternal( int lev, std::vector<int> &ans )
+bool DLX::danceInternal( int lev, std::vector<std::vector<int> > &anss, std::vector<int> &ans, bool multiAnswer, bool recover )
 {
 	if(_head->right == _head)
 	{
 		ans.resize(lev);
+		anss.push_back(ans);
 		return true;
 	}
 
@@ -136,6 +137,7 @@ bool dlx::DLX::danceInternal( int lev, std::vector<int> &ans )
 
 	removeCol(c1);
 
+	bool ret = false;
 	Node *downNode = c1->down;
 	while(downNode != c1)
 	{
@@ -149,7 +151,8 @@ bool dlx::DLX::danceInternal( int lev, std::vector<int> &ans )
 			rightNode = rightNode->right;
 		}
 
-		if(danceInternal(lev + 1, ans))
+		ret = danceInternal(lev + 1, anss, ans, multiAnswer, recover);
+		if(ret && !recover && !multiAnswer)
 			return true;
 
 		Node *leftNode = downNode->left;
@@ -159,11 +162,14 @@ bool dlx::DLX::danceInternal( int lev, std::vector<int> &ans )
 			leftNode = leftNode->left;
 		}
 
+		if(ret && !multiAnswer)
+			break;
+
 		downNode = downNode->down;
 	}
 
 	resumeCol(c1);
-	return false;
+	return ret;
 }
 
 void DLX::removeCol( Node *colNode )

@@ -36,12 +36,12 @@ public:
 	void init(int col);
 	int appendRow(const std::list<int> &data);
 	int appendRow(bool *data);
-	std::vector<int> dance();
+	std::vector<std::vector<int> > dance(bool multiAnswer = false, bool recover = true);
 
 private:
 	void removeCol(Node *colNode);
 	void resumeCol(Node *colNode);
-	bool danceInternal(int lev, std::vector<int> &ans);
+	bool danceInternal(int lev, std::vector<std::vector<int> > &anss, std::vector<int> &ans, bool multiAnswer, bool recover);
 	void clearData();
 
 private:

@@ -40,6 +40,12 @@ int main(int argc, char *argv[])
 	//	{0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0},
 	//	{1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0},
 	//	{0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
+	//	{0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1},
+	//	{0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0},
+	//	{1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1},
+	//	{0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0},
+	//	{1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+	//	{0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1},
 	//	{0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1}
 	//};
 
@@ -50,8 +56,15 @@ int main(int argc, char *argv[])
 	//d.appendRow(data[3]);
 	//d.appendRow(data[4]);
 	//d.appendRow(data[5]);
+	//d.appendRow(data[6]);
+	//d.appendRow(data[7]);
+	//d.appendRow(data[8]);
+	//d.appendRow(data[9]);
+	//d.appendRow(data[10]);
+	//d.appendRow(data[11]);
 
-	//std::vector<int> ret = d.dance();
+	//std::vector<std::vector<int> > ret = d.dance(true);
+	//std::vector<std::vector<int> > ret2 = d.dance(true, false);
 
 	// sudoku example
 	int sudoku[9][9] = {
@@ -114,7 +127,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	std::vector<int> r = dlx.dance();
+	std::vector<std::vector<int> > r = dlx.dance(false, false);
 
 	if(r.empty())
 	{
@@ -122,7 +135,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		for(std::vector<int>::iterator it = r.begin(); it != r.end(); ++ it)
+		for(std::vector<int>::iterator it = r[0].begin(); it != r[0].end(); ++ it)
 		{
 			AnsNode &an = ansMap[*it];
 			sudoku[an.row][an.col] = an.num;
